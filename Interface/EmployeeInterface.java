@@ -3,6 +3,7 @@ package pro.sky.HomeWorkEmployeeMapTwo.Interface;
 import pro.sky.HomeWorkEmployeeMapTwo.Model.Employee;
 
 import java.util.Collection;
+import java.util.Map;
 
 public interface EmployeeInterface {
     Employee add(String firstName, String lastName);
@@ -11,5 +12,5 @@ public interface EmployeeInterface {
 
     Employee find(String firstName, String lastName);
 
-    Collection<Employee> findAll();
+    Map<String, Employee> findAll();
 }
