@@ -7,58 +7,55 @@ import pro.sky.HomeWorkEmployeeMapTwo.Exception.EmployeeStorageIsFullException;
 import pro.sky.HomeWorkEmployeeMapTwo.Interface.EmployeeInterface;
 import pro.sky.HomeWorkEmployeeMapTwo.Model.Employee;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.Map;
+import java.util.*;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeInterface {
 
     public final int NUMBER_OF_EMPLOYEES = 10;
 
-    private final List<Employee> employeesList;
+    private final Map<String, Employee> employeesMap;
 
     public EmployeeServiceImpl() {
-        this.employeesList = new ArrayList<>();
+        this.employeesMap = new HashMap();
     }
 
     @Override
     public Employee add(String firstName, String lastName) {
         Employee employee = new Employee(firstName, lastName);
+        String name = firstName + lastName;
 
-        if (employeesList.size() > NUMBER_OF_EMPLOYEES) {
+        if (employeesMap.size() > NUMBER_OF_EMPLOYEES) {
             throw new EmployeeStorageIsFullException("Превышен лимит количества сотрудников");
         }
 
-        if (employeesList.contains(employee)) {
+        if (employeesMap.containsKey(name)) {
             throw new EmployeeAlreadyAddedException("уже есть такой сотрудник");
         }
-        employeesList.add(employee);
+
+        employeesMap.put(name, employee);
         return employee;
+
     }
 
     @Override
     public Employee remove(String firstName, String lastName) {
         Employee employee = new Employee(firstName, lastName);
-        if (employeesList.contains(employee)) {
-            employeesList.remove(employee);
-            return employee;
+        String name = firstName + lastName;
+        if (employeesMap.containsKey(name)) {
+            return employeesMap.remove(name);
         }
         throw new EmployeeNotFoundException();
     }
 
     @Override
     public Employee find(String firstName, String lastName) {
-        Employee employee = new Employee(firstName, lastName);
-        if (employeesList.contains(employee)) {
-            return employee;
-        }
-        throw new EmployeeNotFoundException();
+        return Optional.ofNullable(employeesMap.get(firstName + lastName)).orElseThrow(EmployeeNotFoundException::new);
     }
 
     @Override
-    public Collection<Employee> findAll() {
-        return Collections.unmodifiableList(employeesList);
+    public Map<String, Employee> findAll() {
+        return employeesMap;
     }
 }
